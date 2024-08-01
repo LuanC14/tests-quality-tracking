@@ -1,8 +1,24 @@
 version: '3.8'
 
 services:
+  gestao-vagas-app:
+    image: openjdk:17-alpine
+    container_name: gestao_vagas
+    working_dir: /app
+    volumes:
+      - ./target/gestao_vagas-0.0.1.jar:/app/app.jar
+    ports:
+     - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/gestao_vagas
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_PROFILES_ACTIVE=default
+    depends_on:
+      - postgres
+    command: [ "java", "-jar", "app.jar" ]
   postgres:
-    container_name: gestao_vagas_postgres
+    container_name: postgres
     image: postgres
     ports:
       - 5432:5432
@@ -10,3 +26,10 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=gestao_vagas
+  sonarqube:
+    container_name: sonarqube
+    image: sonarqube:9.9.0-community
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    ports:
+      - 9000:9000
